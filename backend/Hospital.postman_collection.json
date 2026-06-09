@@ -1,0 +1,418 @@
+{
+  "info": {
+    "name": "Hospital API",
+    "description": "Simple Postman collection for the Hospital Appointment backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": "patient@example.com"
+    },
+    {
+      "key": "otp",
+      "value": ""
+    },
+    {
+      "key": "doctorId",
+      "value": ""
+    },
+    {
+      "key": "patientId",
+      "value": ""
+    },
+    {
+      "key": "appointmentId",
+      "value": ""
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Patient",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"patient1\",\n  \"password\": \"password123\",\n  \"name\": \"Test Patient\",\n  \"email\": \"{{email}}\",\n  \"role\": \"patient\",\n  \"phone\": \"9876543210\",\n  \"dateOfBirth\": \"2000-01-01\",\n  \"gender\": \"male\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Register Doctor",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"doctor1\",\n  \"password\": \"password123\",\n  \"name\": \"Test Doctor\",\n  \"email\": \"doctor@example.com\",\n  \"role\": \"doctor\",\n  \"phone\": \"9876543211\",\n  \"specialization\": \"General Physician\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Verify Email OTP",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"{{otp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Resend Verification OTP",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/resend-verification-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "resend-verification-otp"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('token', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"patient1\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/doctors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "doctors"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Patients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/patients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "patients"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/users/{{patientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{patientId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Book Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"appointmentDate\": \"2026-06-20\",\n  \"timeSlot\": \"09:00 AM\",\n  \"reason\": \"Regular checkup\",\n  \"notes\": \"Patient has mild fever since yesterday.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Appointments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Appointment By ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments",
+                "{{appointmentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellationReason\": \"Patient requested reschedule.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments",
+                "{{appointmentId}}",
+                "cancel"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Doctor notes after consultation.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appointments",
+                "{{appointmentId}}",
+                "complete"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
