@@ -14,6 +14,12 @@ const generateToken = (id) => {
 
 const generateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
+const sendVerificationOtpEmailInBackground = ({ to, name, otp }) => {
+  sendVerificationOtpEmail({ to, name, otp }).catch((error) => {
+    console.error(`Failed to send verification email to ${to}:`, error);
+  });
+};
+
 // @route   POST /api/auth/register
 // @desc    Register a new patient or doctor
 // @access  Public
@@ -46,9 +52,31 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    const normalizedEmail = String(email).toLowerCase().trim();
+
     // Check if username or email already exists
-    const existing = await User.findOne({ $or: [{ username }, { email }] });
+    const existing = await User.findOne({ $or: [{ username }, { email: normalizedEmail }] });
     if (existing) {
+      if (existing.email === normalizedEmail && !existing.isEmailVerified) {
+        const otp = generateOtp();
+        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        existing.setEmailVerificationOtp(otp, otpExpiresAt);
+        await existing.save();
+
+        sendVerificationOtpEmailInBackground({
+          to: existing.email,
+          name: existing.name,
+          otp,
+        });
+
+        return res.status(200).json({
+          success: true,
+          message: 'Account already exists but is not verified. A new verification code is being sent to your email.',
+          verificationRequired: true,
+          email: existing.email,
+        });
+      }
+
       return res.status(409).json({
         success: false,
         message: existing.username === username
@@ -61,7 +89,7 @@ router.post('/register', async (req, res) => {
       username,
       password,
       name,
-      email,
+      email: normalizedEmail,
       role,
       phone,
       specialization,
@@ -75,20 +103,15 @@ router.post('/register', async (req, res) => {
     user.setEmailVerificationOtp(otp, otpExpiresAt);
     await user.save();
 
-    try {
-      await sendVerificationOtpEmail({
-        to: user.email,
-        name: user.name,
-        otp,
-      });
-    } catch (mailError) {
-      await User.findByIdAndDelete(user._id);
-      throw mailError;
-    }
+    sendVerificationOtpEmailInBackground({
+      to: user.email,
+      name: user.name,
+      otp,
+    });
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please verify your email with the OTP sent to your inbox.',
+      message: 'Registration successful. Your verification code is being sent to your email.',
       verificationRequired: true,
       email: user.email,
     });
@@ -186,7 +209,7 @@ router.post('/resend-verification-otp', async (req, res) => {
     user.setEmailVerificationOtp(otp, otpExpiresAt);
     await user.save();
 
-    await sendVerificationOtpEmail({
+    sendVerificationOtpEmailInBackground({
       to: user.email,
       name: user.name,
       otp,
@@ -194,7 +217,7 @@ router.post('/resend-verification-otp', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'A new verification code has been sent to your email.',
+      message: 'A new verification code is being sent to your email.',
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
