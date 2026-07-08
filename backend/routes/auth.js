@@ -82,6 +82,7 @@ router.post('/register', async (req, res) => {
         otp,
       });
     } catch (mailError) {
+      console.error('Verification email failed:', mailError);
       await User.findByIdAndDelete(user._id);
       return res.status(502).json({
         success: false,
