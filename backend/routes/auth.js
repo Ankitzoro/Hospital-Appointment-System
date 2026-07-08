@@ -83,7 +83,10 @@ router.post('/register', async (req, res) => {
       });
     } catch (mailError) {
       await User.findByIdAndDelete(user._id);
-      throw mailError;
+      return res.status(502).json({
+        success: false,
+        message: 'Registration could not send the verification email. Please check backend email environment variables and try again.',
+      });
     }
 
     res.status(201).json({
