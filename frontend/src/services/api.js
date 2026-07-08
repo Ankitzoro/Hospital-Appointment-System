@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 60000,
 });
 
 // Attach token automatically
@@ -11,26 +10,6 @@ API.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
-
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.code === 'ECONNABORTED') {
-      error.response = {
-        data: {
-          message: 'Request timed out. The server may still be starting or email delivery is taking too long. Please try again.',
-        },
-      };
-    } else if (!error.response) {
-      error.response = {
-        data: {
-          message: 'Unable to connect to the backend. Please check the API URL and try again.',
-        },
-      };
-    }
-    return Promise.reject(error);
-  }
-);
 
 // Auth
 export const registerUser = (data) => API.post('/auth/register', data);
