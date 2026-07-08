@@ -9,7 +9,11 @@ connectDB();
 
 const app = express();
 
-const defaultOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+const defaultOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://hospital-frontend-ire5.onrender.com',
+];
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
   : defaultOrigins;

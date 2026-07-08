@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD
+    ? 'https://hospital-appointment-system-tyo6.onrender.com/api'
+    : '/api');
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: API_URL,
 });
 
 // Attach token automatically
